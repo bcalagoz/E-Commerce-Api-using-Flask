@@ -8,21 +8,27 @@ from flask_expects_json import expects_json
 
 
 def get_all_stores():
-    stores = db_get_all_stores()
+    try:
+        stores = db_get_all_stores()
+        stores_json = {"stores": []}
+        # convert array to json
+        for store in stores:
+            stores_json["stores"].append(
+                {
+                    "id": store[0],
+                    "name": store[1],
+                    "description": store[2],
+                    "user_id": store[3]
+                }
+            )
 
-    stores_json = {"stores": []}
-    # convert array to json
-    for store in stores:
-        stores_json["stores"].append(
-            {
-                "id": store[0],
-                "name": store[1],
-                "description": store[2],
-                "user_id": store[3]
-            }
-        )
+    except Exception as ex:
+        print(ex)
+        message = {'message': f'Error: {ex}'}
+        return message, 500
 
-    return stores_json, 200
+    else:
+        return stores_json, 200
 
 # TODO schema dosyası oluştur shemaları ekle
 schema = {
