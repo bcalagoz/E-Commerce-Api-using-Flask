@@ -16,17 +16,6 @@ conn = get_db_connection()
 # Open a cursor to perform database operations
 cur = conn.cursor()
 
-# These statements to ensure that any existing tables with the same names are dropped before creating new ones
-# cur.execute('DROP TABLE IF EXISTS reviews CASCADE;'
-#             'DROP TABLE IF EXISTS product_categories CASCADE;'
-#             'DROP TABLE IF EXISTS categories CASCADE;'
-#             'DROP TABLE IF EXISTS order_items CASCADE;'
-#             'DROP TABLE IF EXISTS orders CASCADE;'
-#             'DROP TABLE IF EXISTS products CASCADE;'
-#             'DROP TABLE IF EXISTS stores CASCADE;'
-#             'DROP TABLE IF EXISTS users CASCADE;'
-#             )
-
 # Execute a command: this creates a new table
 cur.execute('CREATE TABLE IF NOT EXISTS users ('
             'id SERIAL PRIMARY KEY,'

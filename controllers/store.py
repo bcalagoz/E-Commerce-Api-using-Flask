@@ -3,8 +3,8 @@ from db.store import db_get_all_stores, db_add_new_store, db_delete_store, db_up
 from flask import request
 from flask_expects_json import expects_json
 
-# TODO hata durumlarınnı try catch ile ayarlaaa
 # TODO logonun base64 olup olmadığını kotrol et
+#  https://stackoverflow.com/questions/12315398/check-if-a-string-is-encoded-in-base64-using-python
 
 
 def get_all_stores():
