@@ -57,5 +57,19 @@ def db_update_store(updated_store, store_id):
     return row_count
 
 
-def db_delete_store():
-    return "Delete Stores", 200
+def db_delete_store(deleted_store_id):
+    conn = get_db_connection()
+    # Open a cursor to perform database operations
+    cur = conn.cursor()
+
+    cur.execute('DELETE FROM stores '
+                'WHERE id = %s ',
+                deleted_store_id  # TODO user_id tokendan gelicek
+                )
+
+    conn.commit()
+    row_count = cur.rowcount
+    cur.close()
+    conn.close()
+
+    return row_count

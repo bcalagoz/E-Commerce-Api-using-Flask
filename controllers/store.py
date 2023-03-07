@@ -2,6 +2,8 @@ import db
 from db.store import db_get_all_stores, db_add_new_store, db_delete_store, db_update_store
 from flask import request
 from flask_expects_json import expects_json
+from uuid6 import uuid6, uuid7, uuid8
+
 
 # TODO logonun base64 olup olmadığını kotrol et
 #  https://stackoverflow.com/questions/12315398/check-if-a-string-is-encoded-in-base64-using-python
@@ -23,18 +25,18 @@ def get_all_stores():
             )
 
     except Exception as ex:
-        print(ex)
         message = {'message': f'Error: {ex}'}
         return message, 500
 
     else:
         return stores_json, 200
 
+
 # TODO schema dosyası oluştur shemaları ekle
-schema = {
+add_new_store_schema = {
     'type': 'object',
     'properties': {
-        'name': {'type': 'string', 'minLength': 4},
+        'name': {'type': 'string'},
         'description': {'type': 'string'},
         'user_id': {'type': 'string'}
     },
@@ -42,32 +44,55 @@ schema = {
 }
 
 
-@expects_json(schema)
+@expects_json(add_new_store_schema)
 def add_new_store():
-    new_store = request.json
+    try:
+        new_store = request.json
+        db_add_new_store(new_store)
+        if db_add_new_store(new_store) == 1:
+            return {"message": "OK"}, 201
+        else:
+            return {"message": "ERROR"}, 500
+    except Exception as ex:
+        message = {'message': f'Error: {ex}'}
+        return message, 500
 
-    if db_add_new_store(new_store) == 1:
-        return {"message": "OK"}, 201
-    else:
-        return {"message": "ERROR"}, 500
+
+update_store_schema = {
+    'type': 'object',
+    'properties': {
+        'name': {'type': 'string'},
+        'description': {'type': 'string'},
+        'user_id': {'type': 'integer'}
+    },
+    'required': ['name', 'description', 'user_id']
+}
 
 
+@expects_json(update_store_schema)
 def update_store():
-    store_id = request.args.get('store-id')
+    try:
+        store_id = request.args.get('store-id')
 
-    updated_store = request.json
+        updated_store = request.json
 
-    if db_update_store(updated_store, store_id) == 1:
-        return {"message": "OK"}, 201
-    else:
-        return {"message": "ERROR"}, 500
+        if db_update_store(updated_store, store_id) == 1:
+            return {"message": "OK"}, 201
+        else:
+            return {"message": "ERROR"}, 500
+    except Exception as ex:
+        message = {'message': f'Error: {ex}'}
+        return message, 500
 
 
 def delete_store():
-    del_store_data = request.json
-    print(del_store_data)
-    return del_store_data
-
-
-
-
+    try:
+        deleted_store_id = request.args.get('store-id')
+        # neden params çift haneli olunca hata veriyor
+        if db_delete_store(deleted_store_id) == 1:
+            return {"message": "OK"}, 201
+        else:
+            return {"message": "ERROR"}, 500
+    except Exception as ex:
+        message = {'message': f'Error: {ex}'}
+        return message, 500
