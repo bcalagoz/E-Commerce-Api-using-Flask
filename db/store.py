@@ -20,9 +20,10 @@ def db_add_new_store(new_store):
     # Open a cursor to perform database operations
     cur = conn.cursor()
 
-    cur.execute('INSERT INTO stores (name, description, user_id)'
-                'VALUES (%s, %s, %s)',
-                (new_store['name'],
+    cur.execute('INSERT INTO stores (id, name, description, user_id)'
+                'VALUES (%s, %s, %s, %s)',
+                (new_store['id'],
+                 new_store['name'],
                  new_store['description'],
                  new_store['user_id'])  # TODO user_id tokendan gelicek
                 )
@@ -62,10 +63,7 @@ def db_delete_store(deleted_store_id):
     # Open a cursor to perform database operations
     cur = conn.cursor()
 
-    cur.execute('DELETE FROM stores '
-                'WHERE id = %s ',
-                deleted_store_id  # TODO user_id tokendan gelicek
-                )
+    cur.execute("DELETE FROM stores WHERE id = %s", (deleted_store_id,))
 
     conn.commit()
     row_count = cur.rowcount

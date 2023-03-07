@@ -2,7 +2,7 @@ import db
 from db.store import db_get_all_stores, db_add_new_store, db_delete_store, db_update_store
 from flask import request
 from flask_expects_json import expects_json
-from uuid6 import uuid6, uuid7, uuid8
+from uuid6 import uuid7
 
 
 # TODO logonun base64 olup olmadığını kotrol et
@@ -48,7 +48,10 @@ add_new_store_schema = {
 def add_new_store():
     try:
         new_store = request.json
-        db_add_new_store(new_store)
+        # Generated random store_id using uuid7
+        create_new_store_id = str(uuid7().hex)
+        new_store['id'] = create_new_store_id
+
         if db_add_new_store(new_store) == 1:
             return {"message": "OK"}, 201
         else:
@@ -63,7 +66,7 @@ update_store_schema = {
     'properties': {
         'name': {'type': 'string'},
         'description': {'type': 'string'},
-        'user_id': {'type': 'integer'}
+        'user_id': {'type': 'string'}
     },
     'required': ['name', 'description', 'user_id']
 }
@@ -88,7 +91,7 @@ def update_store():
 def delete_store():
     try:
         deleted_store_id = request.args.get('store-id')
-        # neden params çift haneli olunca hata veriyor
+
         if db_delete_store(deleted_store_id) == 1:
             return {"message": "OK"}, 201
         else:
