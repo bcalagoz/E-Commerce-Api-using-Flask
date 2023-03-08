@@ -20,7 +20,9 @@ def get_all_stores():
                     "id": store[0],
                     "name": store[1],
                     "description": store[2],
-                    "user_id": store[3]
+                    "user_id": store[3],
+                    "created_at": store[4],
+                    "is_active": store[5]
                 }
             )
 
