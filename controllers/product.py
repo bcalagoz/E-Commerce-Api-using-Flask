@@ -17,12 +17,11 @@ def get_all_products():
                     "description": product[2],
                     "price": product[3],
                     "image_url": product[4],
-                    "shop_id": product[5],
-                    "created_at": product[6],
-                    "is_active": product[7],
+                    "created_at": product[5],
+                    "is_active": product[6],
+                    "shop_id": product[7],
                 }
             )
-
     except Exception as ex:
         message = {'message': f'Error: {ex}'}
         return message, 500
@@ -31,8 +30,34 @@ def get_all_products():
         return products_json, 200
 
 
+add_new_product_schema = {
+    'type': 'object',
+    'properties': {
+        'name': {'type': 'string'},
+        'description': {'type': 'string'},
+        'price': {'type': 'string'},
+        'image_url': {'type': 'string'},
+        'shop_id': {'type': 'string'},
+    },
+    'required': ['name', 'description', 'price', 'image_url', 'shop_id']
+}
+
+
+@expects_json(add_new_product_schema)
 def add_new_product():
-    pass
+    try:
+        new_product = request.json
+        # Generated random product_id using uuid7
+        create_new_product_id = str(uuid7().hex)
+        new_product['id'] = create_new_product_id
+
+        if db_add_new_product(new_product) == 1:
+            return {"message": "OK"}, 201
+        else:
+            return {"message": "ERROR"}, 500
+    except Exception as ex:
+        message = {'message': f'Error: {ex}'}
+        return message, 500
 
 
 def update_product():

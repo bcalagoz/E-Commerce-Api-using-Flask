@@ -14,9 +14,31 @@ def db_get_all_products():
 
     return products
 
+# TODO logonun base64 olup olmadığını kotrol et
+#  https://stackoverflow.com/questions/12315398/check-if-a-string-is-encoded-in-base64-using-python
 
-def db_add_new_product():
-    pass
+
+def db_add_new_product(new_product):
+    conn = get_db_connection()
+    # Open a cursor to perform database operations
+    cur = conn.cursor()
+
+    cur.execute('INSERT INTO products (id, name, description, price, image_url, shop_id)'
+                'VALUES (%s, %s, %s, %s, %s, %s)',
+                (new_product['id'],
+                 new_product['name'],
+                 new_product['description'],
+                 new_product['price'],
+                 new_product['image_url'],
+                 new_product['shop_id'])
+                )
+
+    conn.commit()
+    row_count = cur.rowcount
+    cur.close()
+    conn.close()
+
+    return row_count
 
 
 def db_update_product():

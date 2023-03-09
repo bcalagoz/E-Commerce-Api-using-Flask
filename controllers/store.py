@@ -5,10 +5,6 @@ from flask_expects_json import expects_json
 from uuid6 import uuid7
 
 
-# TODO logonun base64 olup olmadığını kotrol et
-#  https://stackoverflow.com/questions/12315398/check-if-a-string-is-encoded-in-base64-using-python
-
-
 def get_all_stores():
     try:
         stores = db_get_all_stores()
