@@ -42,5 +42,16 @@ def db_update_product():
     pass
 
 
-def db_delete_product():
-    pass
+def db_delete_product(deleted_product_id):
+    conn = get_db_connection()
+    # Open a cursor to perform database operations
+    cur = conn.cursor()
+    print(deleted_product_id)
+    cur.execute("DELETE FROM products WHERE id = %s", (deleted_product_id,))
+
+    conn.commit()
+    row_count = cur.rowcount
+    cur.close()
+    conn.close()
+
+    return row_count

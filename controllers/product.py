@@ -81,4 +81,13 @@ def update_product():
 
 
 def delete_product():
-    pass
+    try:
+        deleted_product_id = request.args.get('product-id')
+
+        if db_delete_product(deleted_product_id) == 1:
+            return {"message": "OK"}, 201
+        else:
+            return {"message": "ERROR"}, 500
+    except Exception as ex:
+        message = {'message': f'Error: {ex}'}
+        return message, 500
