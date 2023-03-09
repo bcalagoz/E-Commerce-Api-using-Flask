@@ -14,9 +14,6 @@ def db_get_all_products():
 
     return products
 
-# TODO logonun base64 olup olmadığını kotrol et
-#  https://stackoverflow.com/questions/12315398/check-if-a-string-is-encoded-in-base64-using-python
-
 
 def db_add_new_product(new_product):
     conn = get_db_connection()

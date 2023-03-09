@@ -47,7 +47,7 @@ def db_update_store(updated_store, store_id):
                 (updated_store['name'],
                  updated_store['description'],
                  updated_store['user_id'],
-                 store_id)  # TODO user_id tokendan gelicek
+                 store_id)
     )
 
     conn.commit()

@@ -2,6 +2,7 @@ from db.product import db_get_all_products, db_add_new_product, db_update_produc
 from flask import request
 from flask_expects_json import expects_json
 from uuid6 import uuid7
+import base64
 
 
 def get_all_products():
@@ -43,6 +44,19 @@ add_new_product_schema = {
 }
 
 
+def is_base64(s):
+    try:
+        # Attempt to decode the data from base64
+        if isinstance(s, str):
+            # If the data is a string, convert it to bytes first
+            s = bytes(s, 'utf-8')
+        # Check if the decoded data can be encoded back to base64
+        return base64.b64encode(base64.b64decode(s)) == s
+    except Exception:
+        # If an exception is thrown during the decoding or encoding process, return False
+        return False
+
+
 @expects_json(add_new_product_schema)
 def add_new_product():
     try:
@@ -50,11 +64,13 @@ def add_new_product():
         # Generated random product_id using uuid7
         create_new_product_id = str(uuid7().hex)
         new_product['id'] = create_new_product_id
-
-        if db_add_new_product(new_product) == 1:
-            return {"message": "OK"}, 201
+        if is_base64(new_product['image_url']):
+            if db_add_new_product(new_product) == 1:
+                return {"message": "OK"}, 201
+            else:
+                return {"message": "ERROR"}, 500
         else:
-            return {"message": "ERROR"}, 500
+            return {"message": "ERROR: image_url is not base64!"}, 500
     except Exception as ex:
         message = {'message': f'Error: {ex}'}
         return message, 500
