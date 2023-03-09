@@ -38,8 +38,28 @@ def db_add_new_product(new_product):
     return row_count
 
 
-def db_update_product():
-    pass
+def db_update_product(updated_product, product_id):
+    conn = get_db_connection()
+    # Open a cursor to perform database operations
+    cur = conn.cursor()
+
+    cur.execute('UPDATE products '
+                'SET name = %s, description = %s, price = %s,  image_url = %s, shop_id = %s '
+                'WHERE id = %s',
+                (updated_product['name'],
+                 updated_product['description'],
+                 updated_product['price'],
+                 updated_product['image_url'],
+                 updated_product['shop_id'],
+                 product_id)
+                )
+
+    conn.commit()
+    row_count = cur.rowcount
+    cur.close()
+    conn.close()
+
+    return row_count
 
 
 def db_delete_product(deleted_product_id):

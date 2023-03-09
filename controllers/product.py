@@ -76,8 +76,33 @@ def add_new_product():
         return message, 500
 
 
+update_product_schema = {
+    'type': 'object',
+    'properties': {
+        'name': {'type': 'string'},
+        'description': {'type': 'string'},
+        'price': {'type': 'string'},
+        'image_url': {'type': 'string'},
+        'shop_id': {'type': 'string'},
+    },
+    'required': ['name', 'description', 'price', 'image_url', 'shop_id']
+}
+
+
+@expects_json(update_product_schema)
 def update_product():
-    pass
+    try:
+        product_id = request.args.get('product-id')
+
+        updated_product = request.json
+
+        if db_update_product(updated_product, product_id) == 1:
+            return {"message": "OK"}, 201
+        else:
+            return {"message": "ERROR"}, 500
+    except Exception as ex:
+        message = {'message': f'Error: {ex}'}
+        return message, 500
 
 
 def delete_product():
