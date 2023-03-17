@@ -87,5 +87,4 @@ def delete_product():
         else:
             return jsonify({'error': 'An error occurred while processing your request.'}), 500
     except Exception as ex:
-        message = {'message': f'Error: {ex}'}
         return jsonify({'error': f'{ex}'}), 500

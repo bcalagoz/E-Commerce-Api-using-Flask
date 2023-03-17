@@ -1,73 +1,100 @@
+import uuid
 from db import get_db_connection
 
 
-def db_get_all_stores():
-    conn = get_db_connection()
-    # Open a cursor to perform database operations
-    cur = conn.cursor()
+class Store:
+    def __init__(self, id, name, description, user_id, created_at=None, is_active=True):
+        self.id = id
+        self.name = name
+        self.description = description
+        self.user_id = user_id
+        self.created_at = created_at
+        self.is_active = is_active
 
-    cur.execute(query='SELECT * FROM stores')
-    stores = cur.fetchall()
+    @staticmethod
+    def get_all_stores():
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM stores")
+        store_data = cur.fetchall()
+        print(store_data)
+        # Bu tuple'daki verileri kullanarak bir Store objesi oluşturmak için, *data ifadesi kullanılır.
+        stores = [Store(*data) for data in store_data]
+        cur.close()
+        conn.close()
+        return stores
 
-    cur.close()
-    conn.close()
+    @staticmethod
+    def create_store(name, description, user_id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        id = uuid.uuid4().hex
+        cur.execute('INSERT INTO stores (id, name, description, user_id) '
+                    'VALUES (%s, %s, %s, %s)',
+                    (id, name, description, user_id,))
+        conn.commit()
+        row_count = cur.rowcount
+        cur.close()
+        conn.close()
+        return row_count
 
-    return stores
+    @staticmethod
+    def get_store_by_id(id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM stores WHERE id = %s", (id,))
+        store_data = cur.fetchone()
+        if store_data:
+            store = Store(*store_data)
+        else:
+            store = None
+        cur.close()
+        conn.close()
 
+        return store
 
-def db_add_new_store(new_store):
-    conn = get_db_connection()
-    # Open a cursor to perform database operations
-    cur = conn.cursor()
+    @staticmethod
+    def update_store(id, name=None, description=None, user_id=None, is_active=None):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        store = Store.get_store_by_id(id)
+        if store:
+            if name is not None:
+                store.name = name
+            if description is not None:
+                store.description = description
+            if user_id is not None:
+                store.user_id = user_id
+            if is_active is not None:
+                store.is_active = is_active
 
-    cur.execute('INSERT INTO stores (id, name, description, user_id)'
-                'VALUES (%s, %s, %s, %s)',
-                (new_store['id'],
-                 new_store['name'],
-                 new_store['description'],
-                 new_store['user_id'])  # TODO user_id tokendan gelicek
-                )
+            cur.execute("UPDATE stores SET name = %s, description = %s, is_active = %s WHERE id = %s",
+                        (store.name, store.description, store.is_active, store.id))
+            conn.commit()
+            cur.close()
+            conn.close()
 
-    conn.commit()
-    row_count = cur.rowcount
-    cur.close()
-    conn.close()
+            return store
+        else:
+            cur.close()
+            conn.close()
 
-    return row_count
+            return None
 
+    @staticmethod
+    def delete_store(id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        store = Store.get_store_by_id(id)
+        if store:
+            cur.execute("DELETE FROM stores WHERE id = %s", (id,))
+            conn.commit()
+            cur.close()
+            conn.close()
 
-def db_update_store(updated_store, store_id):
-    conn = get_db_connection()
-    # Open a cursor to perform database operations
-    cur = conn.cursor()
+            return store
+        else:
+            cur.close()
+            conn.close()
 
-    cur.execute('UPDATE stores '
-                'SET name = %s, description = %s, user_id = %s '
-                'WHERE id = %s',
-                (updated_store['name'],
-                 updated_store['description'],
-                 updated_store['user_id'],
-                 store_id)
-    )
-
-    conn.commit()
-    row_count = cur.rowcount
-    cur.close()
-    conn.close()
-
-    return row_count
-
-
-def db_delete_store(deleted_store_id):
-    conn = get_db_connection()
-    # Open a cursor to perform database operations
-    cur = conn.cursor()
-
-    cur.execute("DELETE FROM stores WHERE id = %s", (deleted_store_id,))
-
-    conn.commit()
-    row_count = cur.rowcount
-    cur.close()
-    conn.close()
-
-    return row_count
+            return None
