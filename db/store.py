@@ -17,7 +17,6 @@ class Store:
         cur = conn.cursor()
         cur.execute("SELECT * FROM stores")
         store_data = cur.fetchall()
-        print(store_data)
         # Bu tuple'daki verileri kullanarak bir Store objesi oluşturmak için, *data ifadesi kullanılır.
         stores = [Store(*data) for data in store_data]
         cur.close()

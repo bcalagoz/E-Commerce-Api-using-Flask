@@ -1,4 +1,4 @@
-from db.product import db_get_all_products, db_add_new_product, db_update_product, db_delete_product
+from db.product import Product, db_add_new_product, db_update_product, db_delete_product
 from schemas.product import validate_json, product_schema
 from flask import request, jsonify
 from uuid6 import uuid7
@@ -7,9 +7,9 @@ import base64
 
 def get_all_products():
     try:
-        products = db_get_all_products()
+        products = Product.get_all_products()
         products_json = {"products": []}
-        # convert array to json
+        # convert array to json TODO make it better
         for product in products:
             products_json["products"].append(
                 {
