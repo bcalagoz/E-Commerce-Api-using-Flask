@@ -1,4 +1,6 @@
 from db import get_db_connection
+import uuid
+
 
 
 class Product:
@@ -24,6 +26,19 @@ class Product:
         conn.close()
         return product_data
 
+    @staticmethod
+    def create_product(name, description, price, image_url, shop_id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        id = uuid.uuid4().hex
+        cur.execute('INSERT INTO products (id, name, description, price, image_url, shop_id) '
+                    'VALUES (%s, %s, %s, %s, %s, %s)',
+                    (id, name, description, price, image_url, shop_id))
+        conn.commit()
+        row_count = cur.rowcount
+        cur.close()
+        conn.close()
+        return row_count
 
 
 # def db_get_all_products():

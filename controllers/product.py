@@ -47,20 +47,15 @@ def is_base64(s):
 def add_new_product():
     try:
         new_product = request.json
-        # Generated random product_id using uuid7
-        create_new_product_id = str(uuid7().hex)
-        new_product['id'] = create_new_product_id
 
         if not is_base64(new_product['image_url']):
             return jsonify({'message': 'image_url is not base64!'}), 400
 
-        if db_add_new_product(new_product) == 1:
-            return jsonify({'message': 'Operation completed successfully.'}), 201
-        else:
-            return jsonify({'error': 'An error occurred while processing your request.'}), 500
-
+        Product.create_product(**new_product)
     except Exception as ex:
         return jsonify({'error': f'{ex}'}), 500
+    else:
+        return jsonify({'message': 'Operation completed successfully.'}), 201
 
 
 @validate_json(product_schema)
