@@ -1,5 +1,6 @@
 from db.product import Product
-from schemas.product import validate_json, product_schema
+from schemas.product import product_schema
+from schemas import validate_json
 from flask import request, jsonify
 import base64
 
@@ -7,26 +8,10 @@ import base64
 def get_all_products():
     try:
         products = Product.get_all_products()
-        products_json = {"products": []}
-        # convert array to json TODO make it better
-        for product in products:
-            products_json["products"].append(
-                {
-                    "id": product[0],
-                    "name": product[1],
-                    "description": product[2],
-                    "price": product[3],
-                    "image_url": product[4],
-                    "created_at": product[5],
-                    "is_active": product[6],
-                    "shop_id": product[7],
-                }
-            )
     except Exception as ex:
         return jsonify({'error': str(ex)}), 500
-
     else:
-        return products_json, 200
+        return jsonify({'products': [product.__dict__ for product in products]}), 200
 
 
 def is_base64(s):
@@ -58,7 +43,7 @@ def add_new_product():
         return jsonify({'error': str(ex)}), 500
 
 
-#@validate_json(product_schema)
+#@validate_json(product_schema) # busatıra gerek kaldı mı?
 def update_product():  # update fonksiyonlarında PATCH metodunu kullanabilir miyim?
     try:
         product_id = request.args.get('product-id')

@@ -1,5 +1,7 @@
 from flask import request, jsonify
 from db.store import Store
+from schemas.store import store_schema
+from schemas import validate_json
 
 
 def get_all_stores():
@@ -11,6 +13,7 @@ def get_all_stores():
         return jsonify({'stores': [store.__dict__ for store in stores]}), 200
 
 
+@validate_json(store_schema)
 def create_store():
     try:
         data = request.get_json()

@@ -21,10 +21,11 @@ class Product:
         cur = conn.cursor()
         cur.execute("SELECT * FROM products")
         product_data = cur.fetchall()
-        # products = [Product(*data) for data in product_data]
+        products = [Product(*data) for data in product_data]
+        print(products)
         cur.close()
         conn.close()
-        return product_data
+        return products
 
     @staticmethod
     def create_product(name, description, price, image_url, shop_id):
