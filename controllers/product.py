@@ -1,7 +1,6 @@
-from db.product import Product, db_add_new_product, db_update_product, db_delete_product
+from db.product import Product
 from schemas.product import validate_json, product_schema
 from flask import request, jsonify
-from uuid6 import uuid7
 import base64
 
 
@@ -24,7 +23,7 @@ def get_all_products():
                 }
             )
     except Exception as ex:
-        return jsonify({'error': f'{ex}'}), 500
+        return jsonify({'error': str(ex)}), 500
 
     else:
         return products_json, 200
@@ -49,37 +48,41 @@ def add_new_product():
         new_product = request.json
 
         if not is_base64(new_product['image_url']):
-            return jsonify({'message': 'image_url is not base64!'}), 400
+            return jsonify({'message': 'image_url is not base64 encoded!'}), 400
 
-        Product.create_product(**new_product)
+        if Product.create_product(**new_product):
+            return jsonify({'message': 'Product created successfully'}), 201
+        else:
+            return jsonify({'error': 'An error occurred while processing your request.'}), 500
     except Exception as ex:
-        return jsonify({'error': f'{ex}'}), 500
-    else:
-        return jsonify({'message': 'Operation completed successfully.'}), 201
+        return jsonify({'error': str(ex)}), 500
 
 
-@validate_json(product_schema)
-def update_product():
+#@validate_json(product_schema)
+def update_product():  # update fonksiyonlarında PATCH metodunu kullanabilir miyim?
     try:
         product_id = request.args.get('product-id')
-
-        updated_product = request.json
-
-        if db_update_product(updated_product, product_id) == 1:
+        data = request.get_json()
+        print(data.get('image_url'))
+        if data.get('image_url'):
+            if not is_base64(data['image_url']):
+                return jsonify({'message': 'image_url is not base64!'}), 400
+        result = Product.update_product(product_id, **data)
+        if result:
             return jsonify({'message': 'Operation completed successfully.'}), 201
         else:
             return jsonify({'error': 'An error occurred while processing your request.'}), 500
     except Exception as ex:
-        return jsonify({'error': f'{ex}'}), 500
+        return jsonify({'error': str(ex)}), 500
 
 
 def delete_product():
     try:
-        deleted_product_id = request.args.get('product-id')
+        product_id = request.args.get('product-id')
 
-        if db_delete_product(deleted_product_id) == 1:
+        if Product.delete_product(product_id):
             return jsonify({'message': 'Operation completed successfully.'}), 201
         else:
             return jsonify({'error': 'An error occurred while processing your request.'}), 500
     except Exception as ex:
-        return jsonify({'error': f'{ex}'}), 500
+        return jsonify({'error': str(ex)}), 500
