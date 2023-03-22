@@ -1,6 +1,5 @@
 import uuid
 from db import get_db_connection
-import psycopg2
 
 
 class Store:
@@ -95,11 +94,11 @@ class Store:
                 cur.close()
                 conn.close()
                 return store
-            except (Exception, psycopg2.DatabaseError) as error:
+            except Exception as ex:
                 cur.execute('ROLLBACK')
                 cur.close()
                 conn.close()
-                raise error
+                raise ex
         else:
             cur.close()
             conn.close()
