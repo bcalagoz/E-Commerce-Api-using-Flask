@@ -1,5 +1,6 @@
 import uuid
 from db import get_db_connection
+import psycopg2
 
 
 class Store:
@@ -86,14 +87,20 @@ class Store:
         cur = conn.cursor()
         store = Store.get_store_by_id(id)
         if store:
-            cur.execute("DELETE FROM stores WHERE id = %s", (id,))
-            conn.commit()
-            cur.close()
-            conn.close()
-
-            return store
+            try:
+                cur.execute('BEGIN')
+                cur.execute('DELETE FROM products WHERE shop_id = %s', (id,))
+                cur.execute('DELETE FROM stores WHERE id = %s', (id,))
+                cur.execute('COMMIT')
+                cur.close()
+                conn.close()
+                return store
+            except (Exception, psycopg2.DatabaseError) as error:
+                cur.execute('ROLLBACK')
+                cur.close()
+                conn.close()
+                raise error
         else:
             cur.close()
             conn.close()
-
             return None
