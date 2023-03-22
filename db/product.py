@@ -22,7 +22,6 @@ class Product:
         cur.execute("SELECT * FROM products")
         product_data = cur.fetchall()
         products = [Product(*data) for data in product_data]
-        print(products)
         cur.close()
         conn.close()
         return products
