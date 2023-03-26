@@ -10,16 +10,25 @@ class Order:
         self.order_date = order_date
         self.total_price = total_price
         self.status = status
+        self.items = []
 
     @staticmethod
     def get_all_orders():
-        # TODO add items
         conn = get_db_connection()
-        # Open a cursor to perform database operations
         cur = conn.cursor()
-        cur.execute("SELECT * FROM orders")
+
+        orders = []
+        cur.execute("SELECT * FROM orders;")
         order_data = cur.fetchall()
-        orders = [Order(*data) for data in order_data]
+
+        for data in order_data:
+            order = Order(*data)
+            cur.execute("SELECT * FROM order_items WHERE order_id=%s;", (order.id,))
+            item_data = cur.fetchall()
+            for item in item_data:
+                order.items.append({"id": item[0], "order_id": item[1], "product_id": item[2], "quantity": item[3], "price": item[4]})
+            orders.append(order)
+
         cur.close()
         conn.close()
         return orders
