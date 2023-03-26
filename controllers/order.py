@@ -1,5 +1,7 @@
 from db.order import Order
 from flask import jsonify, request
+from schemas.order import order_schema
+from schemas import validate_json
 
 
 def get_all_orders():
@@ -11,6 +13,7 @@ def get_all_orders():
         return jsonify({'orders': [order.__dict__ for order in orders]}), 200
 
 
+@validate_json(order_schema)
 def add_new_order():
     try:
         new_order = request.json
