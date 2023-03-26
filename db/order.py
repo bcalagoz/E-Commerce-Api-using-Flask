@@ -13,6 +13,7 @@ class Order:
 
     @staticmethod
     def get_all_orders():
+        # TODO add items
         conn = get_db_connection()
         # Open a cursor to perform database operations
         cur = conn.cursor()
@@ -77,10 +78,12 @@ class Order:
                 cur.execute('COMMIT')
                 cur.close()
                 conn.close()
-            except:
+                return order
+            except Exception as ex:
                 cur.execute('ROLLBACK')
-                raise
-            return order
+                cur.close()
+                conn.close()
+                raise ex
         else:
             cur.close()
             conn.close()
