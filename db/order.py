@@ -3,7 +3,7 @@ import uuid
 
 
 class Order:
-    def __init__(self, id, customer_id, shop_id, order_date=None, total_price="0", status="Pending"):
+    def __init__(self, id, customer_id, shop_id, order_date=None, total_price="0", status="pending"):
         self.id = id
         self.customer_id = customer_id
         self.shop_id = shop_id
@@ -24,19 +24,30 @@ class Order:
         return orders
 
     @staticmethod
-    def create_order(customer_id, shop_id):
+    def create_order(customer_id, shop_id, total_price, status, items):
         conn = get_db_connection()
         cur = conn.cursor()
         id = uuid.uuid4().hex
-        print(customer_id)
-        cur.execute('INSERT INTO orders (id, customer_id, shop_id) '
-                    'VALUES (%s, %s, %s)',
-                    (id, customer_id, shop_id))
-        conn.commit()
-        row_count = cur.rowcount
-        cur.close()
-        conn.close()
-        return row_count
+        try:
+            cur.execute('BEGIN')
+            cur.execute('INSERT INTO orders (id, customer_id, shop_id, total_price, status) '
+                        'VALUES (%s, %s, %s, %s, %s)',
+                        (id, customer_id, shop_id, total_price, status,))
+            for item in items:
+                item['id'] = uuid.uuid4().hex
+                cur.execute('INSERT INTO order_items (id, order_id, product_id, quantity, price) '
+                            'VALUES (%s, %s, %s, %s, %s)',
+                            (item['id'], id, item['product_id'], item['quantity'], item['price'],))
+            cur.execute('COMMIT')
+            row_count = cur.rowcount
+            cur.close()
+            conn.close()
+            return row_count
+        except Exception as ex:
+            cur.execute('ROLLBACK')
+            cur.close()
+            conn.close()
+            raise ex
 
     @staticmethod
     def get_order_by_id(id):
@@ -74,3 +85,4 @@ class Order:
             cur.close()
             conn.close()
             return None
+
