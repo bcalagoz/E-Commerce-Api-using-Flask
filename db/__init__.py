@@ -27,11 +27,23 @@ cur.execute('CREATE TABLE IF NOT EXISTS users ('
             'last_name VARCHAR(50) NOT NULL,'
             'email VARCHAR(100) UNIQUE NOT NULL,'
             'password VARCHAR(255) NOT NULL,'
+            'role VARCHAR(50) NOT NULL,'
+            'is_verified BOOLEAN NOT NULL DEFAULT FALSE,'
             'address VARCHAR(255),'
             'city VARCHAR(50),'
             'state VARCHAR(50),'
             'zip_code VARCHAR(10),'
             'phone VARCHAR(20));'
+            )
+
+# Execute a command: this creates a new table
+cur.execute('CREATE TABLE IF NOT EXISTS auth ('
+            'id TEXT PRIMARY KEY,'
+            'user_id TEXT REFERENCES users(id),'
+            'session_key TEXT NOT NULL,'
+            'token_type VARCHAR(100) NOT NULL,'
+            'token TEXT NOT NULL,'
+            'created_at TIMESTAMP NOT NULL DEFAULT NOW());'
             )
 
 # Execute a command: this creates a new table
