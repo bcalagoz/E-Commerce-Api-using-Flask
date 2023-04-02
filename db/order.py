@@ -44,6 +44,7 @@ class Order:
                         'VALUES (%s, %s, %s, %s, %s)',
                         (id, customer_id, shop_id, total_price, status,))
             for item in items:
+                # TODO execute parametresi olarak yap for olmasın
                 item['id'] = uuid.uuid4().hex
                 cur.execute('INSERT INTO order_items (id, order_id, product_id, quantity, price) '
                             'VALUES (%s, %s, %s, %s, %s)',
@@ -98,3 +99,16 @@ class Order:
             conn.close()
             return None
 
+    @staticmethod
+    def add_item(order_id, product_id, quantity, price):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        item_id = uuid.uuid4().hex
+        cur.execute('INSERT INTO order_items (id, order_id, product_id, quantity, price) '
+                    'VALUES (%s, %s, %s, %s, %s)',
+                    (item_id, order_id, product_id, quantity, price,))
+        conn.commit()
+        row_count = cur.rowcount
+        cur.close()
+        conn.close()
+        return row_count
