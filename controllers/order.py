@@ -58,5 +58,16 @@ def add_item():
         return jsonify({'error': str(ex)}), 500
 
 
+def delete_item():
+    try:
+        data = request.get_json()
+
+        if Order.delete_item(**data):
+            return jsonify({'message': 'Item successfully deleted!'}), 201
+        else:
+            return jsonify({'error': 'An error occurred while processing your request.'}), 500
+    except Exception as ex:
+        return jsonify({'error': str(ex)}), 500
+
 
 

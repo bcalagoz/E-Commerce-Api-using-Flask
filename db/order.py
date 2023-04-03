@@ -112,3 +112,14 @@ class Order:
         cur.close()
         conn.close()
         return row_count
+
+    @staticmethod
+    def delete_item(order_id, product_id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('DELETE FROM order_items WHERE order_id = %s AND product_id = %s', (order_id, product_id,))
+        conn.commit()
+        row_count = cur.rowcount
+        cur.close()
+        conn.close()
+        return row_count
