@@ -1,8 +1,18 @@
 login_schema = {
     'type': 'object',
     'properties': {
-        'email': {'type': 'string'},
-        'password': {'type': 'string'},
+        "email": {
+            "type": "string",
+            "description": "The user's email address.",
+            "maxLength": 255,
+            "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+        },
+        "password": {
+            "type": "string",
+            "description": "The user's password.",
+            "pattern": "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
+            "maxLength": 100
+        },
     },
     'required': ['email', 'password']
 }
