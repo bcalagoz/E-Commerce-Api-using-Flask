@@ -1,5 +1,5 @@
 from db.product import Product
-from schemas.product import product_schema
+from schemas.product import new_product_schema, update_product_schema
 from schemas import validate_json
 from flask import request, jsonify
 import base64
@@ -27,7 +27,7 @@ def is_base64(s):
         return False
 
 
-@validate_json(product_schema)
+@validate_json(new_product_schema)
 def add_new_product():
     try:
         new_product = request.json
@@ -43,7 +43,7 @@ def add_new_product():
         return jsonify({'error': str(ex)}), 500
 
 
-#@validate_json(product_schema) # busatıra gerek kaldı mı?
+@validate_json(update_product_schema)
 def update_product():  # update fonksiyonlarında PATCH metodunu kullanabilir miyim?
     try:
         product_id = request.args.get('product-id')
