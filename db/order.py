@@ -1,3 +1,5 @@
+from psycopg2.extras import execute_values
+
 from db import get_db_connection
 import uuid
 
@@ -37,18 +39,18 @@ class Order:
     def create_order(customer_id, shop_id, total_price, status, items):
         conn = get_db_connection()
         cur = conn.cursor()
-        id = uuid.uuid4().hex
+        order_id = uuid.uuid4().hex
         try:
             cur.execute('BEGIN')
             cur.execute('INSERT INTO orders (id, customer_id, shop_id, total_price, status) '
                         'VALUES (%s, %s, %s, %s, %s)',
-                        (id, customer_id, shop_id, total_price, status,))
-            for item in items:
-                # TODO execute parametresi olarak yap for olmasın
-                item['id'] = uuid.uuid4().hex
-                cur.execute('INSERT INTO order_items (id, order_id, product_id, quantity, price) '
-                            'VALUES (%s, %s, %s, %s, %s)',
-                            (item['id'], id, item['product_id'], item['quantity'], item['price'],))
+                        (order_id, customer_id, shop_id, total_price, status,))
+            # Generate a list of tuples containing the necessary information for each item
+            item_values = [(uuid.uuid4().hex, order_id, item['product_id'], item['quantity'], item['price'])
+                           for item in items]
+            # Use execute_values to insert all items in a single query
+            execute_values(cur, 'INSERT INTO order_items (id, order_id, product_id, quantity, price) VALUES %s',
+                           item_values)
             cur.execute('COMMIT')
             row_count = cur.rowcount
             cur.close()
