@@ -3,9 +3,8 @@ import psycopg2
 
 
 def get_db_connection():
-    # TODO burayı düzelt
     try:
-        connection = psycopg2.connect(
+        conn = psycopg2.connect(
             host="localhost",
             database="e-commerce",
             user="postgres",
@@ -13,12 +12,68 @@ def get_db_connection():
     except Exception as ex:
         return jsonify({'error': f'{ex}'}), 500
     else:
-        return connection
+        return conn
 
 
-conn = get_db_connection()
+def execute_without_commit(conn, cursor, sql, args=None):
+    try:
+        if args:
+            cursor.execute(sql, args)
+        else:
+            cursor.execute(sql)
+
+        row_count = cursor.rowcount
+
+    except Exception as exp:
+        print(exp)
+        if conn:
+            close(conn, cursor)
+        return False, -1
+    else:
+        return True, row_count
+
+
+def close(conn, cursor):
+    """
+    A method used to close connection of postgresql.
+    :param conn:
+    :param cursor:
+    :return:
+    """
+    cursor.close()
+    conn.close()
+
+
+def get_connection_conn_cursor():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+    except Exception as exp:
+        print(exp)
+        return None, None
+    else:
+        return conn, cursor
+
+
+def commit_without_execute(conn, cursor):
+    try:
+        conn.commit()
+        if conn:
+            close(conn, cursor)
+
+        row_count = cursor.rowcount
+    except Exception as exp:
+        print(exp)
+        if conn:
+            close(conn, cursor)
+        return False, -1
+    else:
+        return False, row_count
+
+
+conn, cur = get_connection_conn_cursor()
 # Open a cursor to perform database operations
-cur = conn.cursor()
 
 # Execute a command: this creates a new table
 cur.execute('CREATE TABLE IF NOT EXISTS users ('
@@ -41,9 +96,7 @@ cur.execute('CREATE TABLE IF NOT EXISTS auth ('
             'id TEXT PRIMARY KEY,'
             'user_id TEXT REFERENCES users(id),'
             'session_key TEXT NOT NULL,'
-            'token_type VARCHAR(100) NOT NULL,'
-            'token TEXT NOT NULL,'
-            'created_at TIMESTAMP NOT NULL DEFAULT NOW());'
+            'token_type VARCHAR(100) NOT NULL);'
             )
 
 # Execute a command: this creates a new table
