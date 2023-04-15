@@ -3,8 +3,27 @@ import jwt
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
+from datetime import datetime
+from flask_mail import Mail, Message
+from flask import url_for
+from flask import current_app
+
 
 load_dotenv()
+
+
+def send_verification_email(verify_token, email):
+    try:
+        with current_app.app_context():
+            mail = Mail()
+            token = verify_token
+            msg = Message('Verify your email address', sender='burakcalagoz@gmail.com', recipients=[email])
+            msg.body = f'Please click on this link to verify your email address: {url_for("auth.verify_email", token=token, _external=True)}'
+            mail.send(msg)
+            return True
+    except Exception as exp:
+        print(exp)
+        return False
 
 
 def hash_password(password):

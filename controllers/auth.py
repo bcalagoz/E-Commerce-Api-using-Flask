@@ -1,15 +1,10 @@
 from db.auth import User, Auth
-from flask import request, jsonify, url_for
+from flask import request, jsonify
 import uuid
 from schemas.auth import login_schema, sign_up_schema
 from schemas import validate_json
 from utils.functions import hash_password, check_password, create_token, decode_token
 from controllers import auth_service
-from datetime import datetime
-from flask_mail import Mail, Message
-
-
-# from app import mail
 
 
 def refresh():
@@ -126,15 +121,3 @@ def verify_email(token):
             return jsonify({'message': 'Invalid verification link!'}), 400
     except Exception as ex:
         return jsonify({'error': str(ex)}), 500
-
-
-# def send_verification_email(verify_token, email):
-#     try:
-#         token = verify_token
-#         msg = Message('Verify your email address', sender='burakcalagoz@gmail.com', recipients=[email])
-#         msg.body = f'Please click on this link to verify your email address: {url_for("verify_email", token=token, _external=True)}'
-#         mail.send(msg)
-#         return True
-#     except Exception as exp:
-#         print(exp)
-#         return False
