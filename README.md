@@ -1,20 +1,7 @@
-
-
-
-![Badges](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue) 
-![Badges](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Badges](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
-![Badges](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)
-![Badges](https://img.shields.io/badge/test-success-success.svg)
-![Badges](https://img.shields.io/badge/computer-science-critical.svg)
-![Badges](https://img.shields.io/badge/coding-life-red.svg)
-
-
-
 <br/>
 <p align="center">
   <a href="https://github.com/bcalagoz/E-Commerce-Api-using-Flask">
-    <img src="https://ibb.co/kQT2kJJ" alt="Logo" width="80" height="80">
+    <img src="https://gcdnb.pbrd.co/images/BlvF8Mnq7aWO.png?o=1" alt="Logo" width="240" height="240">
   </a>
 
   <h3 align="center">E-Commerce Api</h3>
@@ -31,10 +18,18 @@
     <a href="https://github.com/bcalagoz/E-Commerce-Api-using-Flask/issues">Report Bug</a>
     .
     <a href="https://github.com/bcalagoz/E-Commerce-Api-using-Flask/issues">Request Feature</a>
+    <br/> 
   </p>
 </p>
 
-![Downloads](https://img.shields.io/github/downloads/bcalagoz/E-Commerce-Api-using-Flask/total) ![Contributors](https://img.shields.io/github/contributors/bcalagoz/E-Commerce-Api-using-Flask?color=dark-green) ![Issues](https://img.shields.io/github/issues/bcalagoz/E-Commerce-Api-using-Flask) ![License](https://img.shields.io/github/license/bcalagoz/E-Commerce-Api-using-Flask) 
+![Badges](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue) 
+![Badges](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Badges](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+![Badges](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)
+![Badges](https://img.shields.io/badge/test-success-success.svg)
+![Badges](https://img.shields.io/badge/computer-science-critical.svg)
+![Badges](https://img.shields.io/badge/coding-life-red.svg)
+
 
 ## Table Of Contents
 
@@ -74,32 +69,17 @@ online.
 Flask - Flask is a popular Python web framework that provides tools and libraries for building web applications. It is lightweight and easy to use, making it a popular choice for developing web applications with Python.
 PostgreSQL - PostgreSQL is a powerful open-source relational database management system that provides advanced features for managing data. It is known for its scalability, reliability, and extensibility, making it a preferred choice for many web applications that require robust data storage and retrieval capabilities.
 
-## Getting Started
+## Clone the repo
 
-
-### Installation
-
-Clone the repo
 ```sh
 git clone https://github.com/bcalagoz/E-Commerce-Api-using-Flask.git
 ```
-
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-### Creating A Pull Request
-
-
 
 ## Authors
 
 * **Burak Can Alagöz** - *Backend Developer* - [Burak Can Alagöz](https://github.com/bcalagoz/) - **
 
-## Acknowledgements
+## Contact
 
 * [LinkedIn](https://www.linkedin.com/in/burak-can-alagoz/)
 * [Email](bclagoz@icloud.com)
-* []()
