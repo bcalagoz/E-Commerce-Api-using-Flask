@@ -43,7 +43,7 @@
 
 ## About The Project
 
-![Screen Shot](images/screenshot.png)
+![Screen Shot](https://pasteboard.co/3DDSSlvAzkuQ.png)
 
 My e-commerce api is a personal project that i'm developing to actively apply and showcase the skills i have learned 
 in web development. As a developer, i have decided to prioritize the backend development, as i believe that creating 
