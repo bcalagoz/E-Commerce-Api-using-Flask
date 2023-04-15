@@ -3,8 +3,7 @@ from db import get_connection_conn_cursor, execute_without_commit, commit_withou
 from utils.functions import hash_password
 import uuid
 from flask import jsonify
-from utils.functions import create_token
-# from controllers.auth import send_verification_email
+from utils.functions import create_token, send_verification_email
 
 
 class AuthService:
@@ -46,14 +45,11 @@ class AuthService:
             if not commit_without_execute(conn, cur):
                 raise Exception('Error committing transaction')
 
-            # TODO send verification mail
-            # if not send_verification_email(verify_token, new_user.email):
-            #     return jsonify({'error': 'Email gönderilemedi'}), 500
-            # send_verification_email(verify_token, new_account_data['email'])
+            send_verification_email(verify_token, new_account_data['email'])
 
             return {'access_token': access_token, 'refresh_token': refresh_token, 'verify_token': verify_token,
                     'user_id': new_account_data['id']}, 201
 
-        except Exception as e:
-            print(e)
-            return jsonify({'error': 'An error occurred while processing your request.'}), 500
+        except Exception as ex:
+            return jsonify({'error': str(ex)}), 500
+
