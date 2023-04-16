@@ -48,7 +48,7 @@ def check_password(password, hashed_password):
     return bcrypt.checkpw(user_bytes, hashed_password)
 
 
-def create_token(token_type, user_id, session_key, email=None):
+def create_token(token_type, user_id, session_key, role, email=None):
     """
     Create JWT token of the given type for the given user id and email
     """
@@ -71,6 +71,7 @@ def create_token(token_type, user_id, session_key, email=None):
         "exp": expire_time,
         "iat": datetime.utcnow(),
         "session_key": session_key,
+        "role": role,
     }
 
     if email is not None:
@@ -96,7 +97,8 @@ def decode_token(token) -> dict:
         raise ValueError("Token is invalid")
 
     # Check if the token contains the required fields
-    if "user_id" not in payload or "type" not in payload or "exp" not in payload or "iat" not in payload or "session_key" not in payload:
+    required_fields = ["user_id", "type", "exp", "iat", "session_key", "role"]
+    if any(field not in payload for field in required_fields):
         raise ValueError("Token is missing required fields")
 
     # Get the user_id, token_type, expiration and creation times from the payload
@@ -105,6 +107,7 @@ def decode_token(token) -> dict:
     exp_time = datetime.utcfromtimestamp(payload["exp"])
     iat_time = datetime.utcfromtimestamp(payload["iat"])
     session_key = payload["session_key"]
+    role = payload["role"]
 
     # Get the email if it exists in the payload
     email = payload.get("email")
@@ -116,6 +119,7 @@ def decode_token(token) -> dict:
         "exp_time": exp_time,
         "iat_time": iat_time,
         "session_key": session_key,
+        "role": role,
         "email": email,
     }
 

@@ -18,13 +18,14 @@ class AuthService:
         try:
             new_account_data['password'] = hash_password(new_account_data['password'])
             new_account_data['id'] = uuid.uuid4().hex
+            new_account_data['role'] = "unverified"
 
             if self.user_db.get_user_by_email(new_account_data['email']):
                 return jsonify({'error': 'Email already exists!'}), 400
 
             conn, cur = get_connection_conn_cursor()
             query = 'INSERT INTO users (id, first_name, last_name, email, password, role) VALUES (%s, %s, %s, %s, %s, %s)'
-            args = (new_account_data['id'], new_account_data['first_name'], new_account_data['last_name'], new_account_data['email'], new_account_data['password'], "customer")
+            args = (new_account_data['id'], new_account_data['first_name'], new_account_data['last_name'], new_account_data['email'], new_account_data['password'], new_account_data['role'])
 
             if not execute_without_commit(conn, cur, query, args):
                 raise Exception('Error executing SQL query')
@@ -32,9 +33,9 @@ class AuthService:
             # Create session_key
             session_key = uuid.uuid4().hex
 
-            access_token = create_token("access", new_account_data['id'], session_key)
-            refresh_token = create_token("refresh", new_account_data['id'], session_key)
-            verify_token = create_token("verify", new_account_data['id'], session_key, new_account_data['email'])
+            access_token = create_token("access", new_account_data['id'], session_key, new_account_data['role'])
+            refresh_token = create_token("refresh", new_account_data['id'], session_key, new_account_data['role'])
+            verify_token = create_token("verify", new_account_data['id'], session_key, new_account_data['role'], new_account_data['email'])
 
             args = ((uuid.uuid4().hex, new_account_data['id'], session_key, "refresh"), (uuid.uuid4().hex, new_account_data['id'], session_key, "verify"))
             for arg in args:

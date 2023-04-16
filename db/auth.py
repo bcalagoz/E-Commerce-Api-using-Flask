@@ -4,7 +4,7 @@ from psycopg2.extras import execute_values
 
 class User:
     @staticmethod
-    def add_new_user(id, first_name, last_name, email, password, role='customer'):
+    def add_new_user(id, first_name, last_name, email, password, role='unverified'):
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute('INSERT INTO users (id, first_name, last_name, email, password, role) '
@@ -36,8 +36,8 @@ class User:
         conn = get_db_connection()
         cur = conn.cursor()
 
-        cur.execute("UPDATE users SET is_verified = %s WHERE id = %s",
-                    (True, user_id))
+        cur.execute("UPDATE users SET is_verified = %s, role = %s WHERE id = %s",
+                    (True, "user", user_id))
         conn.commit()
         row_count = cur.rowcount
         cur.close()
