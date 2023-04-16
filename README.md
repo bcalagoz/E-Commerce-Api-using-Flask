@@ -35,11 +35,9 @@
 
 * [About the Project](#about-the-project)
 * [Built With](#built-with)
-* [Getting Started](#getting-started)
-  * [Installation](#installation)
-* [Usage](#usage)
+* [Clone The Repo](#clone-the-repo)
 * [Authors](#authors)
-* [Acknowledgements](#acknowledgements)
+* [Contact](#contact)
 
 ## About The Project
 
