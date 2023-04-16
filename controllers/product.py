@@ -1,6 +1,7 @@
 from db.product import Product
 from schemas.product import new_product_schema, update_product_schema
 from schemas import validate_json
+from controllers import required_roles
 from flask import request, jsonify
 import base64
 
@@ -27,6 +28,7 @@ def is_base64(s):
         return False
 
 
+@required_roles(["admin", "user"])
 @validate_json(new_product_schema)
 def add_new_product():
     try:
