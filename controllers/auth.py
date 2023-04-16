@@ -68,21 +68,19 @@ def login():
             "last_name": user[2],
             "email": user[3],
             "password": user[4],
+            "role": user[5],
             "is_verified": user[6],
         }
         if check_password(account_data['password'], user_json["password"]):
-            if user_json["is_verified"]:
-                session_key = uuid.uuid4().hex
-                access_token = create_token("access", user_json["id"], session_key)
-                refresh_token = create_token("refresh", user_json["id"], session_key)
-                verify_token = create_token("verify", user_json["id"], session_key, user[3])
-                tokens_data = [(uuid.uuid4().hex, user_json["id"], session_key, "refresh"),
-                               (uuid.uuid4().hex, user_json["id"], session_key, "verify")]
-                Auth.add_token_to_db(tokens_data)
-                return {'access_token': access_token, 'refresh_token': refresh_token, 'verify_token': verify_token,
-                        'user_id': user_json["id"]}, 200
-            else:
-                return jsonify({'error': 'Account is not verified!'}), 400
+            session_key = uuid.uuid4().hex
+            access_token = create_token("access", user_json["id"], session_key, user_json["role"])
+            refresh_token = create_token("refresh", user_json["id"], session_key, user_json["role"])
+            verify_token = create_token("verify", user_json["id"], session_key,user_json["role"], user_json["email"])
+            tokens_data = [(uuid.uuid4().hex, user_json["id"], session_key, "refresh"),
+                           (uuid.uuid4().hex, user_json["id"], session_key, "verify")]
+            Auth.add_token_to_db(tokens_data)
+            return {'access_token': access_token, 'refresh_token': refresh_token, 'verify_token': verify_token,
+                    'user_id': user_json["id"]}, 200
         else:
             return jsonify({'error': 'Wrong password, Please try again!'}), 400
     else:
@@ -95,9 +93,6 @@ def logout():
 
         if auth_token:
             token_info = decode_token(auth_token)
-            # Check if the access token has expired
-            # if token_info["exp_time"] < datetime.utcnow():
-            #     raise ValueError("Access token has expired")
             session_key = token_info["session_key"]
             if Auth.delete_token(session_key):
                 return jsonify({'message': 'Successful!'}), 200
