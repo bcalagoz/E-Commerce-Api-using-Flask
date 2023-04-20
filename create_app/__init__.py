@@ -6,16 +6,24 @@ from routes.auth import auth_bp
 from routes.order import order_bp
 from routes.product import product_bp
 from routes.store import store_bp
+from create_app.cache import cache
+from create_app.limiter import limiter
 
 
 load_dotenv()
 
 
+
 def create_app():
     app = Flask(__name__)
     mail = Mail()
+    cache.init_app(app)
+    limiter.init_app(app)
+
+
     @app.route('/')
-    def hello_world():  # put application's code here
+    @limiter.limit("100/second", override_defaults=False)
+    def hello_world():
         return 'Hello World!'
 
     app.register_blueprint(store_bp, url_prefix='/store')
