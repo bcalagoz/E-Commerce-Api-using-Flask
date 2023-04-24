@@ -2,8 +2,10 @@ from flask import request, jsonify
 from db.store import Store
 from schemas.store import create_store_schema, update_store_schema
 from schemas import validate_json
+from create_app.cache import cache
 
 
+@cache.cached(timeout=50)
 def get_all_stores():
     try:
         stores = Store.get_all_stores()
@@ -11,6 +13,16 @@ def get_all_stores():
         return jsonify({'error': str(ex)}), 500
     else:
         return jsonify({'stores': [store.__dict__ for store in stores]}), 200
+
+
+@cache.cached(timeout=50)
+def get_store_by_id(id):
+    try:
+        store = Store.get_store_by_id(id)
+    except Exception as ex:
+        return jsonify({'error': str(ex)}), 500
+    else:
+        return jsonify({'store': store.__dict__}), 200
 
 
 @validate_json(create_store_schema)
