@@ -32,6 +32,7 @@ def add_new_product():
         return jsonify({'error': str(ex)}), 500
 
 
+@required_roles(["admin", "user"])
 @validate_json(update_product_schema)
 def update_product():  # update fonksiyonlarında PATCH metodunu kullanabilir miyim?
     try:
@@ -50,6 +51,7 @@ def update_product():  # update fonksiyonlarında PATCH metodunu kullanabilir mi
         return jsonify({'error': str(ex)}), 500
 
 
+@required_roles(["admin", "user"])
 def delete_product():
     try:
         product_id = request.args.get('product-id')
