@@ -3,7 +3,7 @@ from schemas.product import new_product_schema, update_product_schema
 from schemas import validate_json
 from controllers import required_roles
 from flask import request, jsonify
-import base64
+from utils.functions import is_base64
 
 
 def get_all_products():
@@ -13,19 +13,6 @@ def get_all_products():
         return jsonify({'error': str(ex)}), 500
     else:
         return jsonify({'products': [product.__dict__ for product in products]}), 200
-
-
-def is_base64(s):
-    try:
-        # Attempt to decode the data from base64
-        if isinstance(s, str):
-            # If the data is a string, convert it to bytes first
-            s = bytes(s, 'utf-8')
-        # Check if the decoded data can be encoded back to base64
-        return base64.b64encode(base64.b64decode(s)) == s
-    except Exception:
-        # If an exception is thrown during the decoding or encoding process, return False
-        return False
 
 
 @required_roles(["admin", "user"])

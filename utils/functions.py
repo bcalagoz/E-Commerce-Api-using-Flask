@@ -7,9 +7,23 @@ from datetime import datetime
 from flask_mail import Mail, Message
 from flask import url_for
 from flask import current_app
+import base64
 
 
 load_dotenv()
+
+
+def is_base64(s):
+    try:
+        # Attempt to decode the data from base64
+        if isinstance(s, str):
+            # If the data is a string, convert it to bytes first
+            s = bytes(s, 'utf-8')
+        # Check if the decoded data can be encoded back to base64
+        return base64.b64encode(base64.b64decode(s)) == s
+    except Exception:
+        # If an exception is thrown during the decoding or encoding process, return False
+        return False
 
 
 def send_verification_email(verify_token, email):
