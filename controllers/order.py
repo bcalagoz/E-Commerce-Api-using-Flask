@@ -3,8 +3,12 @@ from db.product import Product
 from flask import jsonify, request
 from schemas.order import order_schema
 from schemas import validate_json
+from controllers import required_roles
+from create_app.cache import cache
 
 
+@cache.cached(timeout=50)
+@required_roles(["admin"])
 def get_all_orders():
     try:
         orders = Order.get_all_orders()
@@ -14,6 +18,7 @@ def get_all_orders():
         return jsonify({'orders': [order.__dict__ for order in orders]}), 200
 
 
+@required_roles(["admin", "user"])
 @validate_json(order_schema)
 def add_new_order():
     try:
@@ -26,10 +31,12 @@ def add_new_order():
         return jsonify({'error': str(ex)}), 500
 
 
+@required_roles(["admin", "user"])
 def update_order():
     pass
 
 
+@required_roles(["admin", "user"])
 def delete_order():
     try:
         order_id = request.args.get('order-id')
@@ -42,6 +49,7 @@ def delete_order():
         return jsonify({'error': str(ex)}), 500
 
 
+@required_roles(["admin", "user"])
 def add_item():
     try:
         data = request.get_json()
@@ -58,6 +66,7 @@ def add_item():
         return jsonify({'error': str(ex)}), 500
 
 
+@required_roles(["admin", "user"])
 def delete_item():
     try:
         data = request.get_json()

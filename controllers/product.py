@@ -4,8 +4,10 @@ from schemas import validate_json
 from controllers import required_roles
 from flask import request, jsonify
 from utils.functions import is_base64
+from create_app.cache import cache
 
 
+@cache.cached(timeout=50)
 def get_all_products():
     try:
         products = Product.get_all_products()
@@ -38,7 +40,6 @@ def update_product():  # update fonksiyonlarında PATCH metodunu kullanabilir mi
     try:
         product_id = request.args.get('product-id')
         data = request.get_json()
-        print(data.get('image_url'))
         if data.get('image_url'):
             if not is_base64(data['image_url']):
                 return jsonify({'message': 'image_url is not base64!'}), 400

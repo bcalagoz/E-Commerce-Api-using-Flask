@@ -3,6 +3,7 @@ from db.store import Store
 from schemas.store import create_store_schema, update_store_schema
 from schemas import validate_json
 from create_app.cache import cache
+from controllers import required_roles
 
 
 @cache.cached(timeout=50)
@@ -25,6 +26,7 @@ def get_store_by_id(id):
         return jsonify({'store': store.__dict__}), 200
 
 
+@required_roles(["admin", "user"])
 @validate_json(create_store_schema)
 def create_store():
     try:
@@ -39,6 +41,7 @@ def create_store():
         return jsonify({'error': str(ex)}), 500
 
 
+@required_roles(["admin", "user"])
 @validate_json(update_store_schema)
 def update_store():
     try:
@@ -53,6 +56,7 @@ def update_store():
         return jsonify({'error': str(ex)}), 500
 
 
+@required_roles(["admin", "user"])
 def delete_store():
     try:
         store_id = request.args.get('store-id')
