@@ -13,13 +13,11 @@ from create_app.limiter import limiter
 load_dotenv()
 
 
-
 def create_app():
     app = Flask(__name__)
     mail = Mail()
     cache.init_app(app)
     limiter.init_app(app)
-
 
     @app.route('/')
     @limiter.limit("100/second", override_defaults=False)
