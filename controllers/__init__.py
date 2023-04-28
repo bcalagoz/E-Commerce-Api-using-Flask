@@ -18,12 +18,13 @@ def required_roles(roles):
             try:
                 payload = decode_token(token)
                 user_role = payload['role']
+                current_user_id = payload['user_id']
                 if user_role not in roles:
                     return jsonify(message='Unauthorized'), 401
             except Exception as ex:
-                return jsonify({'error': ex}), 400
+                return jsonify(message=f"{ex}"), 400
 
-            return f(*args, **kwargs)
+            return f(current_user_id, *args, **kwargs)
 
         return decorated_function
     return decorator

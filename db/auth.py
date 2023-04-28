@@ -103,3 +103,24 @@ class Auth:
         conn.close()
 
         return token_data
+
+    @staticmethod
+    def get_all_sessions():
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM auth")
+        auth_data = cur.fetchall()
+        cur.close()
+        conn.close()
+        return auth_data
+
+    @staticmethod
+    def get_sessions_by_user_id(current_user_id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM auth WHERE user_id = %s", (current_user_id,))
+        auth_data = cur.fetchall()
+        cur.close()
+        conn.close()
+        return auth_data
+

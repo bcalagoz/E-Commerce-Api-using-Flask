@@ -1,6 +1,6 @@
 import bcrypt
 import jwt
-from datetime import datetime, timedelta
+from datetime import timedelta
 import os
 from dotenv import load_dotenv
 from datetime import datetime

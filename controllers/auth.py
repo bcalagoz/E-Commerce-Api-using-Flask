@@ -8,6 +8,8 @@ from controllers import auth_service
 from controllers import required_roles
 from ua_parser import user_agent_parser
 import requests
+from create_app.cache import cache
+
 
 '''
 auth tablosuna device bilgisi,browser bilgileri ekle
@@ -152,5 +154,53 @@ def verify_email(token):
     except Exception as ex:
         return jsonify({'error': str(ex)}), 500
 
+
+@cache.cached(timeout=50)
+@required_roles(["admin"])
 def get_all_sessions():
-    pass
+    try:
+        auth_data = Auth.get_all_sessions()
+        sessions = []
+
+        for item in auth_data:
+            session = {
+                'id': item[0],
+                'user_id': item[1],
+                'session_key': item[2],
+                'token_type': item[3],
+                'browser': item[4],
+                'device': item[5],
+                'os': item[6],
+                'ip_address': item[7],
+                'location': item[8],
+                'created_at': item[9],
+            }
+            sessions.append(session)
+        return jsonify({'sessions': sessions}), 200
+    except Exception as ex:
+        return jsonify({'error': str(ex)}), 500
+
+
+@required_roles(["admin", "user", "unverified"])
+def get_sessions_by_user_id(current_user_id):
+    try:
+        auth_data = Auth.get_sessions_by_user_id(current_user_id)
+        sessions = []
+
+        for item in auth_data:
+            session = {
+                'id': item[0],
+                'user_id': item[1],
+                'session_key': item[2],
+                'token_type': item[3],
+                'browser': item[4],
+                'device': item[5],
+                'os': item[6],
+                'ip_address': item[7],
+                'location': item[8],
+                'created_at': item[9],
+            }
+            sessions.append(session)
+        return jsonify({'sessions': sessions}), 200
+    except Exception as ex:
+        return jsonify({'error': str(ex)}), 500
