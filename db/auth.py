@@ -50,7 +50,7 @@ class Auth:
     def add_token_to_db(tokens_data):
         conn, cur = get_connection_conn_cursor()
         cur = conn.cursor()
-        execute_values(cur, 'INSERT INTO auth (id, user_id, session_key, token_type) VALUES %s',
+        execute_values(cur, 'INSERT INTO auth (id, user_id, session_key, token_type, browser, device, os, ip_address, location) VALUES %s',
                        tokens_data)
         conn.commit()
         row_count = cur.rowcount

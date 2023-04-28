@@ -96,7 +96,13 @@ cur.execute('CREATE TABLE IF NOT EXISTS auth ('
             'id TEXT PRIMARY KEY,'
             'user_id TEXT REFERENCES users(id),'
             'session_key TEXT NOT NULL,'
-            'token_type VARCHAR(100) NOT NULL);'
+            'token_type VARCHAR(100) NOT NULL,'
+            'browser TEXT,'
+            'device TEXT,'
+            'os TEXT,'
+            'ip_address TEXT,'
+            'location TEXT,'
+            'created_at TIMESTAMP NOT NULL DEFAULT NOW());'
             )
 
 # Execute a command: this creates a new table

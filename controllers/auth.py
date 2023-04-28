@@ -1,20 +1,39 @@
 from db.auth import User, Auth
-from flask import request, jsonify
+from flask import request, jsonify, json
 import uuid
 from schemas.auth import login_schema, sign_up_schema
 from schemas import validate_json
-from utils.functions import hash_password, check_password, create_token, decode_token
+from utils.functions import check_password, create_token, decode_token
 from controllers import auth_service
+from controllers import required_roles
+from ua_parser import user_agent_parser
+import requests
+
+'''
+auth tablosuna device bilgisi,browser bilgileri ekle
+sessionları listele
+drop session (user ve admin  göndermeli)
+drop yaparken session a ait verileri sil database redise ekle
+'''
+
+'''
+redis kullan
+kullanıcı banlama endpointi olsun.(userid , ne kadar süre banlanacak ver kullanıcı banla)
+redise koy
+bir tane decoratör koy is_banned() redisten kontrol et
+banlanma süresi ekle
+user_id: {banın biteceği süre: }
+'''
+'''
+resend verification mail
+'''
+
+'''
+role değiştirme ekle
+'''
 
 
 def refresh():
-    """
-    - refresh token ve user id auth tablosun kontrol et
-    - varsa yeni refreesh token ve access token ver,
-    - yeni access eski refresh
-    - yoksa
-    :return:
-    """
     try:
         refresh_token = request.headers.get('Authorization')
         if refresh_token:
@@ -59,34 +78,51 @@ def sign_up():
 
 @validate_json(login_schema)
 def login():
-    account_data = request.get_json()
-    user = User.get_user_by_email(account_data['email'])
-    if user:
-        user_json = {
-            "id": user[0],
-            "first_name": user[1],
-            "last_name": user[2],
-            "email": user[3],
-            "password": user[4],
-            "role": user[5],
-            "is_verified": user[6],
-        }
-        if check_password(account_data['password'], user_json["password"]):
-            session_key = uuid.uuid4().hex
-            access_token = create_token("access", user_json["id"], session_key, user_json["role"])
-            refresh_token = create_token("refresh", user_json["id"], session_key, user_json["role"])
-            verify_token = create_token("verify", user_json["id"], session_key,user_json["role"], user_json["email"])
-            tokens_data = [(uuid.uuid4().hex, user_json["id"], session_key, "refresh"),
-                           (uuid.uuid4().hex, user_json["id"], session_key, "verify")]
-            Auth.add_token_to_db(tokens_data)
-            return {'access_token': access_token, 'refresh_token': refresh_token, 'verify_token': verify_token,
-                    'user_id': user_json["id"]}, 200
+    # TODO verified değil ise verifiy token gönder
+    try:
+        account_data = request.get_json()
+        user = User.get_user_by_email(account_data['email'])
+        if user:
+            user_json = {
+                "id": user[0],
+                "first_name": user[1],
+                "last_name": user[2],
+                "email": user[3],
+                "password": user[4],
+                "role": user[5],
+                "is_verified": user[6],
+            }
+            if check_password(account_data['password'], user_json["password"]):
+                ua_string = request.user_agent.string
+                parsed_string = user_agent_parser.Parse(ua_string)
+                browser = parsed_string['user_agent']['family']  # browser
+                device = parsed_string['device']['model']  # device
+                os = parsed_string['os']['family']  # os
+                ip_adress = request.remote_addr  # ip_address
+                access_key = "4824fb5309db20b5a30db540c7066670"
+                url = f'http://api.ipstack.com/{ip_adress}?access_key={access_key}&format=1'
+                r = requests.get(url)
+                j = json.loads(r.text)
+                location = j['city']  # location
+
+                session_key = uuid.uuid4().hex
+                access_token = create_token("access", user_json["id"], session_key, user_json["role"])
+                refresh_token = create_token("refresh", user_json["id"], session_key, user_json["role"])
+                verify_token = create_token("verify", user_json["id"], session_key, user_json["role"], user_json["email"])
+                tokens_data = [(uuid.uuid4().hex, user_json["id"], session_key, "refresh", browser, device, os, ip_adress, location),
+                               (uuid.uuid4().hex, user_json["id"], session_key, "verify", browser, device, os, ip_adress, location)]
+                Auth.add_token_to_db(tokens_data)
+                return {'access_token': access_token, 'refresh_token': refresh_token, 'verify_token': verify_token,
+                        'user_id': user_json["id"]}, 200
+            else:
+                return jsonify({'error': 'Wrong password, Please try again!'}), 400
         else:
-            return jsonify({'error': 'Wrong password, Please try again!'}), 400
-    else:
-        return jsonify({'error': 'The email that you have entered doesn\'t match any account!'}), 400
+            return jsonify({'error': 'The email that you have entered doesn\'t match any account!'}), 400
+    except Exception as ex:
+        return jsonify({'error': str(ex)}), 500
 
 
+@required_roles(["admin", "user", "unverified"])
 def logout():
     try:
         auth_token = request.headers.get('Authorization')
@@ -103,7 +139,6 @@ def logout():
 
 
 def verify_email(token):
-    # verify token auth tablosunda varsa user
     try:
         token_data = decode_token(token)
         user_id = token_data["user_id"]
@@ -116,3 +151,6 @@ def verify_email(token):
             return jsonify({'message': 'Invalid verification link!'}), 400
     except Exception as ex:
         return jsonify({'error': str(ex)}), 500
+
+def get_all_sessions():
+    pass
