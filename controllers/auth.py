@@ -12,8 +12,6 @@ from create_app.cache import cache
 
 
 '''
-auth tablosuna device bilgisi,browser bilgileri ekle
-sessionları listele
 drop session (user ve admin  göndermeli)
 drop yaparken session a ait verileri sil database redise ekle
 '''
@@ -35,6 +33,7 @@ role değiştirme ekle
 '''
 
 
+@required_roles(["admin", "user", "unverified"])
 def refresh():
     try:
         refresh_token = request.headers.get('Authorization')
@@ -125,17 +124,12 @@ def login():
 
 
 @required_roles(["admin", "user", "unverified"])
-def logout():
+def logout(current_user):
     try:
-        auth_token = request.headers.get('Authorization')
-
-        if auth_token:
-            token_info = decode_token(auth_token)
-            session_key = token_info["session_key"]
-            if Auth.delete_token(session_key):
-                return jsonify({'message': 'Successful!'}), 200
-            else:
-                return jsonify({'error': 'An error occurred while processing your request.'}), 500
+        if Auth.delete_token(current_user['session_key']):
+            return jsonify({'message': 'Successful!'}), 200
+        else:
+            return jsonify({'error': 'An error occurred while processing your request.'}), 500
     except Exception as ex:
         return jsonify({'error': str(ex)}), 500
 
@@ -182,9 +176,10 @@ def get_all_sessions():
 
 
 @required_roles(["admin", "user", "unverified"])
-def get_sessions_by_user_id(current_user_id):
+def get_sessions_by_user_id(current_user):
     try:
-        auth_data = Auth.get_sessions_by_user_id(current_user_id)
+        # TODO sessionları filtreleyerek kullanıcıya göster
+        auth_data = Auth.get_sessions_by_user_id(current_user['user_id'])
         sessions = []
 
         for item in auth_data:
