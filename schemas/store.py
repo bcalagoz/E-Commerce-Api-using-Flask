@@ -3,9 +3,8 @@ create_store_schema = {
     'properties': {
         'name': {'type': 'string'},
         'description': {'type': 'string'},
-        'user_id': {'type': 'string'},
     },
-    'required': ['name', 'description', 'user_id']
+    'required': ['name', 'description']
 }
 
 update_store_schema = {
@@ -13,7 +12,6 @@ update_store_schema = {
     'properties': {
         'name': {'type': 'string'},
         'description': {'type': 'string'},
-        'user_id': {'type': 'string'},
         'is_active': {'type': 'boolean'}
     },
     'required': []
