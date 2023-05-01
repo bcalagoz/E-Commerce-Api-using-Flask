@@ -32,6 +32,16 @@ class User:
         return user
 
     @staticmethod
+    def get_user_by_id(user_id):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+        user_data = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        return user_data
+    @staticmethod
     def verify_user(user_id):
         conn = get_db_connection()
         cur = conn.cursor()
