@@ -118,7 +118,7 @@ class Auth:
     def get_all_sessions():
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM auth")
+        cur.execute("SELECT * FROM auth ORDER BY created_at DESC")
         auth_data = cur.fetchall()
         cur.close()
         conn.close()
@@ -128,7 +128,7 @@ class Auth:
     def get_sessions_by_user_id(current_user_id):
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM auth WHERE user_id = %s", (current_user_id,))
+        cur.execute("SELECT DISTINCT ON (ip_address) * FROM auth WHERE user_id = %s AND token_type = 'refresh' ORDER BY ip_address, created_at DESC;", (current_user_id,))
         auth_data = cur.fetchall()
         cur.close()
         conn.close()

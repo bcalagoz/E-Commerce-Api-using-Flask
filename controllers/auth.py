@@ -151,7 +151,7 @@ def verify_email(token):
 
 @cache.cached(timeout=50)
 @required_roles(["admin"])
-def get_all_sessions():
+def get_all_sessions(current_user):
     try:
         auth_data = Auth.get_all_sessions()
         sessions = []
@@ -178,7 +178,6 @@ def get_all_sessions():
 @required_roles(["admin", "user", "unverified"])
 def get_sessions_by_user_id(current_user):
     try:
-        # TODO sessionları filtreleyerek kullanıcıya göster
         auth_data = Auth.get_sessions_by_user_id(current_user['user_id'])
         sessions = []
 
