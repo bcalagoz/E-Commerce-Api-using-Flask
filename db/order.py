@@ -16,6 +16,7 @@ class Order:
 
     @staticmethod
     def get_all_orders():
+        # TODO fix this with JOIN query --- n+1 problem
         conn = get_db_connection()
         cur = conn.cursor()
 
