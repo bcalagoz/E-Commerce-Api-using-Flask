@@ -94,6 +94,9 @@ def login():
                 "role": user[5],
                 "is_verified": user[6],
             }
+            if redis_conn.exists(user_json["id"]):
+                return jsonify({'message': 'User is banned.'}), 403
+
             if check_password(account_data['password'], user_json["password"]):
                 ua_string = request.user_agent.string
                 parsed_string = user_agent_parser.Parse(ua_string)
@@ -206,9 +209,12 @@ def ban_user(current_user):
     try:
         data = request.get_json()
         user_id = data['user_id']
-        expiration_time = data['ex']
+        expiration_time = data['ex'] # expiration time is seconds
 
-        redis_conn.set(data['user_id'], 'banned', ex=expiration_time)  # Set the expiration time to 1 hour (3600 seconds)
+        if redis_conn.exists(user_id):
+            return jsonify({'message': 'User has already banned.'}), 403
+
+        redis_conn.set(data['user_id'], 'banned', ex=expiration_time)
 
         return jsonify({'message': f'User {user_id} is banned.'}), 200
     except Exception as ex:

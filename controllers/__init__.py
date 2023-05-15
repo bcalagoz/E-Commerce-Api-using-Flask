@@ -2,6 +2,7 @@ from services.auth import AuthService
 from functools import wraps
 from flask import request, jsonify
 from utils.functions import decode_token
+from create_app.redis import redis_conn
 
 
 auth_service = AuthService()
@@ -22,6 +23,10 @@ def required_roles(roles):
                     'session_key': payload['session_key'],
                     'role': payload['role']
                 }
+
+                if redis_conn.exists(current_user["user_id"]):
+                    return jsonify({'message': 'User is banned.'}), 403
+
                 if current_user['role'] not in roles:
                     return jsonify(message='Unauthorized'), 401
             except Exception as ex:
@@ -31,3 +36,7 @@ def required_roles(roles):
 
         return decorated_function
     return decorator
+
+
+
+
