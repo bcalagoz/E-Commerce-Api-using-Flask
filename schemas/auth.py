@@ -49,3 +49,19 @@ sign_up_schema = {
     },
     "required": ["first_name", "last_name", "email", "password"]
 }
+
+
+ban_user_schema = {
+    'type': 'object',
+    'properties': {
+        "user_id": {
+            "type": "string",
+            "description": "The user's id."
+        },
+        "ex": {
+            "type": "integer",
+            "description": "Expiration time.(in seconds)"
+        },
+    },
+    'required': ['user_id', 'ex']
+}

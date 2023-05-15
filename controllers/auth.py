@@ -1,7 +1,7 @@
 from db.auth import User, Auth
 from flask import request, jsonify, json
 import uuid
-from schemas.auth import login_schema, sign_up_schema
+from schemas.auth import login_schema, sign_up_schema, ban_user_schema
 from schemas import validate_json
 from utils.functions import check_password, create_token, decode_token
 from controllers import auth_service
@@ -15,21 +15,9 @@ from create_app.redis import redis_conn
 '''
 drop session (user ve admin  göndermeli)
 drop yaparken session a ait verileri sil database redise ekle
-'''
 
-'''
-redis kullan
-kullanıcı banlama endpointi olsun.(userid , ne kadar süre banlanacak ver kullanıcı banla)
-redise koy
-bir tane decoratör koy is_banned() redisten kontrol et
-banlanma süresi ekle
-user_id: {banın biteceği süre: }
-'''
-'''
 resend verification mail
-'''
 
-'''
 role değiştirme ekle
 '''
 
@@ -204,6 +192,7 @@ def get_sessions_by_user_id(current_user):
         return jsonify({'error': str(ex)}), 500
 
 
+@validate_json(ban_user_schema)
 @required_roles(["admin"])
 def ban_user(current_user):
     try:
