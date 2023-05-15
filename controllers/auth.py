@@ -9,6 +9,7 @@ from controllers import required_roles
 from ua_parser import user_agent_parser
 import requests
 from create_app.cache import cache
+from create_app.redis import redis_conn
 
 
 '''
@@ -196,5 +197,19 @@ def get_sessions_by_user_id(current_user):
             }
             sessions.append(session)
         return jsonify({'sessions': sessions}), 200
+    except Exception as ex:
+        return jsonify({'error': str(ex)}), 500
+
+
+@required_roles(["admin"])
+def ban_user(current_user):
+    try:
+        data = request.get_json()
+        user_id = data['user_id']
+        expiration_time = data['ex']
+
+        redis_conn.set(data['user_id'], 'banned', ex=expiration_time)  # Set the expiration time to 1 hour (3600 seconds)
+
+        return jsonify({'message': f'User {user_id} is banned.'}), 200
     except Exception as ex:
         return jsonify({'error': str(ex)}), 500
