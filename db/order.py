@@ -1,5 +1,4 @@
 from psycopg2.extras import execute_values
-
 from db import get_db_connection
 import uuid
 
@@ -16,25 +15,37 @@ class Order:
 
     @staticmethod
     def get_all_orders():
-        # TODO fix this with JOIN query --- n+1 problem
         conn = get_db_connection()
         cur = conn.cursor()
 
-        orders = []
-        cur.execute("SELECT * FROM orders;")
-        order_data = cur.fetchall()
+        cur.execute("SELECT o.*, oi.* FROM orders o JOIN order_items oi ON o.id = oi.order_id;")
+        result_set = cur.fetchall()
 
-        for data in order_data:
-            order = Order(*data)
-            cur.execute("SELECT * FROM order_items WHERE order_id=%s;", (order.id,))
-            item_data = cur.fetchall()
-            for item in item_data:
-                order.items.append({"id": item[0], "order_id": item[1], "product_id": item[2], "quantity": item[3], "price": item[4]})
-            orders.append(order)
+        orders = {}
+        for row in result_set:
+            order_id = row[0]
+            if order_id not in orders:
+                orders[order_id] = {
+                    "id": row[0],
+                    "customer_id": row[1],
+                    "shop_id": row[2],
+                    "order_date": row[3],
+                    "status": row[4],
+                    "total_price": row[5],
+                    "items": []
+                }
+            orders[order_id]["items"].append({
+                "id": row[6],
+                "order_id": row[7],
+                "product_id": row[8],
+                "quantity": row[9],
+                "price": row[10]
+            })
 
         cur.close()
         conn.close()
-        return orders
+
+        return list(orders.values())
 
     @staticmethod
     def create_order(customer_id, shop_id, total_price, status, items):

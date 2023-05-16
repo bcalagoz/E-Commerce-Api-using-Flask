@@ -19,7 +19,7 @@ def get_all_products():
 
 @required_roles(["admin", "user"])
 @validate_json(new_product_schema)
-def add_new_product():
+def add_new_product(current_user):
     try:
         new_product = request.json
 

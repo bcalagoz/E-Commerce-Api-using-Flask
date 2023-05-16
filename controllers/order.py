@@ -9,18 +9,18 @@ from create_app.cache import cache
 
 @cache.cached(timeout=50)
 @required_roles(["admin"])
-def get_all_orders():
+def get_all_orders(current_user):
     try:
         orders = Order.get_all_orders()
     except Exception as ex:
         return jsonify({'error': str(ex)}), 500
     else:
-        return jsonify({'orders': [order.__dict__ for order in orders]}), 200
+        return jsonify({'orders': orders}), 200
 
 
 @required_roles(["admin", "user"])
 @validate_json(order_schema)
-def add_new_order():
+def add_new_order(current_user):
     try:
         new_order = request.json
         if Order.create_order(**new_order):
@@ -50,7 +50,7 @@ def delete_order():
 
 
 @required_roles(["admin", "user"])
-def add_item():
+def add_item(current_user):
     try:
         data = request.get_json()
         product = Product.get_product_by_id(data["product_id"])
